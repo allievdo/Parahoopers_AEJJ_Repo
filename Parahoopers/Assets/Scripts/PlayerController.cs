@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
     private float speed = 5.5f;
-    private float force = 1;
+    private float force = 2;
     private float gravity = -0.5f;
+
+    private float torque = 0.05f;
+    private float torqueOp = -0.05f;
+
     Rigidbody rb;
 
     private void Start()
@@ -25,12 +30,16 @@ public class PlayerController : MonoBehaviour
         if(Input.GetKey(KeyCode.A))
         {
             rb.AddForce(-transform.right * force);
+            transform.Rotate(Vector3.forward * torque);
+            //rb.AddTorque(transform.forward * torque);
         }
 
         //Adds force to the right
         if (Input.GetKey(KeyCode.D))
         {
             rb.AddForce(transform.right * force);
+            transform.Rotate(Vector3.forward * torqueOp);
+            //rb.AddTorque(-transform.forward * torque);
         }
     }
 }

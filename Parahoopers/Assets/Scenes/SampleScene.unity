@@ -345,6 +345,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ToonSoldier_WW2_demo_model
       objectReference: {fileID: 0}
+    - target: {fileID: 111614, guid: 2599104a4a2a5214f8407d03827b5eff, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 432436, guid: 2599104a4a2a5214f8407d03827b5eff, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.32236
@@ -1585,6 +1589,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 586b4e4e90102da41b669c5e08a99f3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  torque: 0.05
+  torqueOp: -0.05
 --- !u!54 &1958469045
 Rigidbody:
   m_ObjectHideFlags: 0
