@@ -79,9 +79,9 @@ public class PlayerController : MonoBehaviour
             //bool isRight = arduinoInput > lastInput || (lastInput > 200 && difference > 200);
 
             if (isLeft)
-                processedInput -= 10 * difference;
+                processedInput -= 10; //10 needs to be changed to an adjustable variable
             else
-                processedInput += 10 * difference;
+                processedInput += 10;// 10 here too
         }
 
         // Set the last input equal to current input.
