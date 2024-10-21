@@ -10,6 +10,9 @@ public class PlayerController : MonoBehaviour
     private int lastInput = -9999;
     private float processedInput;
 
+    private bool turningLeft = false; //Temporary for now
+    private bool turningRight = false; //Temporary for now
+
     private float speed = 3.5f;
 
     private float force = 2;
@@ -50,7 +53,7 @@ public class PlayerController : MonoBehaviour
         transform.Translate(Vector3.up * gravity * Time.deltaTime);
 
         //Adds force to the left
-        if(Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.A) || turningLeft)
         {
             //rb.AddForce(-transform.right * force);
             transform.Rotate(Vector3.forward * torque);
@@ -58,8 +61,11 @@ public class PlayerController : MonoBehaviour
             //rb.AddTorque(transform.forward * torque);
         }
 
+        if (turningRight) Debug.Log("turningRight");
+        if (turningLeft) Debug.Log("turningLeft");
+
         //Adds force to the right
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.D) || turningRight)
         {
             //rb.AddForce(transform.right * force);
             transform.Rotate(Vector3.forward * torqueOp);
@@ -68,7 +74,7 @@ public class PlayerController : MonoBehaviour
         }
 
         //FOR TESTING
-        if(Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space))
         {
             rb.AddForce(transform.up * force);
         }
@@ -86,18 +92,28 @@ public class PlayerController : MonoBehaviour
             // Sets the last input equal to arduino input if it has never been set before.
             lastInput = arduinoInput;
         }
-        
+
+        //Clears our temp variables
+        turningLeft = false;
+        turningRight = false;
+
         float difference = MathF.Abs(lastInput - arduinoInput);
 
         if (difference != 0)
         {
-            bool isLeft = arduinoInput < lastInput || (lastInput < 32 && difference > 200);
+            bool isRight = arduinoInput < lastInput || (lastInput < 32 && difference > 200);
             //bool isRight = arduinoInput > lastInput || (lastInput > 200 && difference > 200);
 
-            if (isLeft)
+            if (isRight)
+            {
                 processedInput -= 10; //10 needs to be changed to an adjustable variable
+                turningRight = true;
+            }
             else
+            {
                 processedInput += 10;// 10 here too
+                turningLeft = true;
+            }
         }
 
         // Set the last input equal to current input.
@@ -105,7 +121,7 @@ public class PlayerController : MonoBehaviour
     }
 
     //Sets the current value read from the arduino.
-    private void SetArduinoValue (int value)
+    private void SetArduinoValue(int value)
     {
         arduinoInput = value;
     }
