@@ -42,6 +42,11 @@ public class PlayerController : MonoBehaviour
         ArduinoInput.InputRecieved -= SetArduinoValue;
     }
 
+    private void OnDrawGizmos()
+    {
+        Debug.DrawLine(transform.position, transform.position + Vector3.up);
+    }
+
     private void Update()
     {
         ProcessArduinoInput();
