@@ -6,6 +6,7 @@ public class HoopScript : MonoBehaviour
 {
     // Start is called before the first frame update
     public Renderer ren;
+    CourseCheckpoints courseCheckpoints;
 
     void Start()
     {
@@ -14,10 +15,19 @@ public class HoopScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.TryGetComponent<PlayerController>(out PlayerController player))
         {
-            Debug.Log("player collided");
-            ren.material.color = Color.green;
+            courseCheckpoints.PlayerThroughCheckpoint(this, other.transform);
         }
+    }
+
+    public void SetCourseCheckpoints(CourseCheckpoints courseCheckpoints)
+    {
+        this.courseCheckpoints = courseCheckpoints;
+    }
+
+    public void WinColor()
+    {
+        ren.material.color = Color.green; //look at this later
     }
 }
