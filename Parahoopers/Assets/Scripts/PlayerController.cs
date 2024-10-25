@@ -58,6 +58,7 @@ public class PlayerController : MonoBehaviour
         transform.Translate(Vector3.up * gravity * Time.deltaTime);
 
         //Adds force to the left
+
         if (Input.GetKey(KeyCode.A) || turningLeft)
         {
             //rb.AddForce(-transform.right * force);
@@ -108,6 +109,7 @@ public class PlayerController : MonoBehaviour
         {
             bool isRight = arduinoInput < lastInput || (lastInput < 32 && difference > 200);
             //bool isRight = arduinoInput > lastInput || (lastInput > 200 && difference > 200);
+
 
             if (isRight)
             {
