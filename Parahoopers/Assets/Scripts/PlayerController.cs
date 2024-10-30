@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     private int arduinoInput = -9999;
     private int lastInput = -9999;
     private float processedInput;
+    private float deadzone = 10f;
 
     private bool turningLeft = false; //Temporary for now
     private bool turningRight = false; //Temporary for now
@@ -16,11 +17,10 @@ public class PlayerController : MonoBehaviour
     private float speed = 3.5f;
 
     private float force = 2;
-    private float gravity = -0.5f;
+    private float gravity = -0.25f;
 
     private float torque = 0.05f;
     private float torqueOp = -0.05f;
-
     private float spinForce = 0.3f;
 
     public Rigidbody rb;
@@ -50,7 +50,8 @@ public class PlayerController : MonoBehaviour
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
 
         //Always applies a downward force (Represents gravity)
-        transform.Translate(Vector3.up * gravity * Time.deltaTime);
+        //transform.Translate(Vector3.up * gravity * Time.deltaTime);
+        rb.AddForce(Vector3.up * gravity * Time.deltaTime, ForceMode.Impulse);
 
         //Adds force to the left
         if(Input.GetKey(KeyCode.A) || turningLeft)
@@ -104,13 +105,13 @@ public class PlayerController : MonoBehaviour
             if (isLeft)
             {
                 processedInput -= 10; //10 needs to be changed to an adjustable variable
-                turningLeft = true;
             }
             else
             {
                 processedInput += 10;// 10 here too
-                turningRight = true;
             }
+            if (processedInput > deadzone) turningRight = true;
+            else if (processedInput < -deadzone) turningLeft = true;
         }
 
         // Set the last input equal to current input.
