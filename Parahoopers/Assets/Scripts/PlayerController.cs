@@ -83,11 +83,13 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.Space))
         {
             rb.AddForce(transform.up * force);
+            transform.Rotate(Vector3.right * torque * Time.deltaTime);
         }
 
         if (Input.GetKey(KeyCode.S))
         {
             rb.AddForce(-transform.up * force);
+            transform.Rotate(Vector3.left * torque * Time.deltaTime);
         }
     }
 
