@@ -47,6 +47,9 @@ public class CourseCheckpoints : MonoBehaviour
 
             nextHoopCheckpointIndex = (nextHoopCheckpointIndex + 1) % hoopCheckpointList.Count;
             OnPlayerCorrectCheckpoint?.Invoke(this, EventArgs.Empty);
+
+            HoopScript nextHoopSingle = hoopCheckpointList[nextHoopCheckpointIndex];
+            nextHoopSingle.NextColor();
         }
 
         else

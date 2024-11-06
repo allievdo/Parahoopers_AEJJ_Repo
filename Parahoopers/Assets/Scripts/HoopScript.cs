@@ -28,6 +28,11 @@ public class HoopScript : MonoBehaviour
 
     public void WinColor()
     {
-        ren.material.color = Color.green; //look at this later
+        ren.material.color = Color.green;
+    }
+
+    public void NextColor()
+    {
+        ren.material.color = Color.yellow;
     }
 }
