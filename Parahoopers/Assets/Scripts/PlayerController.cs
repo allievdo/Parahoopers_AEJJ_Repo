@@ -42,6 +42,11 @@ public class PlayerController : MonoBehaviour
         ArduinoInput.InputRecieved -= SetArduinoValue;
     }
 
+    private void OnDrawGizmos()
+    {
+        Debug.DrawLine(transform.position, transform.position + Vector3.up);
+    }
+
     private void Update()
     {
         ProcessArduinoInput();
@@ -54,13 +59,17 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(Vector3.up * gravity * Time.deltaTime, ForceMode.Impulse);
 
         //Adds force to the left
-        if(Input.GetKey(KeyCode.A) || turningLeft)
+
+        if (Input.GetKey(KeyCode.A) || turningLeft)
         {
             //rb.AddForce(-transform.right * force);
             transform.Rotate(Vector3.forward * torque);
             transform.Rotate(Vector3.down * spinForce);
             //rb.AddTorque(transform.forward * torque);
         }
+
+        if (turningRight) Debug.Log("turningRight");
+        if (turningLeft) Debug.Log("turningLeft");
 
         //Adds force to the right
         if (Input.GetKey(KeyCode.D) || turningRight)
@@ -72,14 +81,16 @@ public class PlayerController : MonoBehaviour
         }
 
         //FOR TESTING
-        if(Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space))
         {
             rb.AddForce(transform.up * force);
+            transform.Rotate(Vector3.right * torque * Time.deltaTime);
         }
 
         if (Input.GetKey(KeyCode.S))
         {
             rb.AddForce(-transform.up * force);
+            transform.Rotate(Vector3.left * torque * Time.deltaTime);
         }
     }
 
@@ -102,7 +113,8 @@ public class PlayerController : MonoBehaviour
             bool isLeft = arduinoInput < lastInput || (lastInput < 32 && difference > 200);
             bool isRight = arduinoInput > lastInput || (lastInput > 200 && difference > 200);
 
-            if (isLeft)
+
+            if (isRight)
             {
                 processedInput -= 10; //10 needs to be changed to an adjustable variable
             }
@@ -119,7 +131,7 @@ public class PlayerController : MonoBehaviour
     }
 
     //Sets the current value read from the arduino.
-    private void SetArduinoValue (int value)
+    private void SetArduinoValue(int value)
     {
         arduinoInput = value;
     }
