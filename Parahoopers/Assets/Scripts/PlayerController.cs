@@ -100,13 +100,13 @@ public class PlayerController : MonoBehaviour
         if (difference != 0)
         {
             bool isLeft = arduinoInput < lastInput || (lastInput < 32 && difference > 200);
-            //bool isRight = arduinoInput > lastInput || (lastInput > 200 && difference > 200);
+            bool isRight = arduinoInput > lastInput || (lastInput > 200 && difference > 200);
 
             if (isLeft)
             {
                 processedInput -= 10; //10 needs to be changed to an adjustable variable
             }
-            else
+            else if (isRight)
             {
                 processedInput += 10;// 10 here too
             }
