@@ -50,7 +50,7 @@ public class HeatCool : MonoBehaviour
 
     IEnumerator PanelCooldown()
     {
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(0.8f);
         isActive = false;
         heatPanel.SetActive(false);
         coolPanel.SetActive(false);
