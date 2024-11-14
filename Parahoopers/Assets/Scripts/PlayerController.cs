@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour
     private int arduinoInput = -9999;
     private int lastInput = -9999;
     private float processedInput;
+    [SerializeField] private float inputDelta = 0.1f;
+    [SerializeField] private float deadzone = 0.2f;
 
     private bool turningLeft = false; //Temporary for now
     private bool turningRight = false; //Temporary for now
@@ -16,11 +18,9 @@ public class PlayerController : MonoBehaviour
     private float speed = 3.5f;
 
     private float force = 2;
-    private float gravity = -0.5f;
+    private float gravity = -0.25f;
 
     private float torque = 0.05f;
-    private float torqueOp = -0.05f;
-
     private float spinForce = 0.3f;
 
     public Rigidbody rb;
@@ -42,6 +42,11 @@ public class PlayerController : MonoBehaviour
         ArduinoInput.InputRecieved -= SetArduinoValue;
     }
 
+    private void OnDrawGizmos()
+    {
+        Debug.DrawLine(transform.position, transform.position + Vector3.up);
+    }
+
     private void Update()
     {
         ProcessArduinoInput();
@@ -50,14 +55,15 @@ public class PlayerController : MonoBehaviour
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
 
         //Always applies a downward force (Represents gravity)
-        transform.Translate(Vector3.up * gravity * Time.deltaTime);
+        //transform.Translate(Vector3.up * gravity * Time.deltaTime);
+        rb.AddForce(Vector3.up * gravity * Time.deltaTime, ForceMode.Impulse);
 
-        //Adds force to the left
-        if(Input.GetKey(KeyCode.A) || turningLeft)
+        //Adds force to the 
+        if (Input.GetKey(KeyCode.A) || turningLeft)
         {
             //rb.AddForce(-transform.right * force);
-            transform.Rotate(Vector3.forward * torque);
-            transform.Rotate(Vector3.down * spinForce);
+            transform.Rotate(Vector3.forward * torque * processedInput);
+            transform.Rotate(Vector3.down * spinForce * processedInput);
             //rb.AddTorque(transform.forward * torque);
         }
 
@@ -65,20 +71,22 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.D) || turningRight)
         {
             //rb.AddForce(transform.right * force);
-            transform.Rotate(Vector3.forward * torqueOp);
-            transform.Rotate(Vector3.up * spinForce);
+            transform.Rotate(Vector3.forward * torque * processedInput);
+            transform.Rotate(Vector3.up * -spinForce * processedInput);
             //rb.AddTorque(-transform.forward * torque);
         }
 
         //FOR TESTING
-        if(Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space))
         {
             rb.AddForce(transform.up * force);
+            transform.Rotate(Vector3.right * torque * Time.deltaTime);
         }
 
         if (Input.GetKey(KeyCode.S))
         {
             rb.AddForce(-transform.up * force);
+            transform.Rotate(Vector3.left * torque * Time.deltaTime);
         }
     }
 
@@ -99,26 +107,27 @@ public class PlayerController : MonoBehaviour
         if (difference != 0)
         {
             bool isLeft = arduinoInput < lastInput || (lastInput < 32 && difference > 200);
-            //bool isRight = arduinoInput > lastInput || (lastInput > 200 && difference > 200);
+            bool isRight = arduinoInput > lastInput || (lastInput > 200 && difference > 200);
 
-            if (isLeft)
+
+            if (isRight)
             {
-                processedInput -= 10; //10 needs to be changed to an adjustable variable
-                turningLeft = true;
+                processedInput -= inputDelta; //10 needs to be changed to an adjustable variable
             }
-            else
+            else if (isLeft)
             {
-                processedInput += 10;// 10 here too
-                turningRight = true;
+                processedInput += inputDelta;// 10 here too
             }
+            processedInput = Mathf.Clamp(processedInput, -1f, 1f);
         }
-
+        if (processedInput > deadzone) turningRight = true;
+        else if (processedInput < -deadzone) turningLeft = true;
         // Set the last input equal to current input.
         lastInput = arduinoInput;
     }
 
     //Sets the current value read from the arduino.
-    private void SetArduinoValue (int value)
+    private void SetArduinoValue(int value)
     {
         arduinoInput = value;
     }
