@@ -9,7 +9,8 @@ public class PlayerController : MonoBehaviour
     private int arduinoInput = -9999;
     private int lastInput = -9999;
     private float processedInput;
-    private float deadzone = 10f;
+    [SerializeField] private float inputDelta = 0.1f;
+    [SerializeField] private float deadzone = 0.2f;
 
     private bool turningLeft = false; //Temporary for now
     private bool turningRight = false; //Temporary for now
@@ -20,7 +21,6 @@ public class PlayerController : MonoBehaviour
     private float gravity = -0.25f;
 
     private float torque = 0.05f;
-    private float torqueOp = -0.05f;
     private float spinForce = 0.3f;
 
     public Rigidbody rb;
@@ -58,25 +58,21 @@ public class PlayerController : MonoBehaviour
         //transform.Translate(Vector3.up * gravity * Time.deltaTime);
         rb.AddForce(Vector3.up * gravity * Time.deltaTime, ForceMode.Impulse);
 
-        //Adds force to the left
-
+        //Adds force to the 
         if (Input.GetKey(KeyCode.A) || turningLeft)
         {
             //rb.AddForce(-transform.right * force);
-            transform.Rotate(Vector3.forward * torque);
-            transform.Rotate(Vector3.down * spinForce);
+            transform.Rotate(Vector3.forward * torque * processedInput);
+            transform.Rotate(Vector3.down * spinForce * processedInput);
             //rb.AddTorque(transform.forward * torque);
         }
-
-        if (turningRight) Debug.Log("turningRight");
-        if (turningLeft) Debug.Log("turningLeft");
 
         //Adds force to the right
         if (Input.GetKey(KeyCode.D) || turningRight)
         {
             //rb.AddForce(transform.right * force);
-            transform.Rotate(Vector3.forward * torqueOp);
-            transform.Rotate(Vector3.up * spinForce);
+            transform.Rotate(Vector3.forward * torque * processedInput);
+            transform.Rotate(Vector3.up * -spinForce * processedInput);
             //rb.AddTorque(-transform.forward * torque);
         }
 
@@ -116,16 +112,16 @@ public class PlayerController : MonoBehaviour
 
             if (isRight)
             {
-                processedInput -= 10; //10 needs to be changed to an adjustable variable
+                processedInput -= inputDelta; //10 needs to be changed to an adjustable variable
             }
-            else if (isRight)
+            else if (isLeft)
             {
-                processedInput += 10;// 10 here too
+                processedInput += inputDelta;// 10 here too
             }
-            if (processedInput > deadzone) turningRight = true;
-            else if (processedInput < -deadzone) turningLeft = true;
+            processedInput = Mathf.Clamp(processedInput, -1f, 1f);
         }
-
+        if (processedInput > deadzone) turningRight = true;
+        else if (processedInput < -deadzone) turningLeft = true;
         // Set the last input equal to current input.
         lastInput = arduinoInput;
     }

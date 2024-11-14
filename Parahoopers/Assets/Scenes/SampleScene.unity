@@ -1500,6 +1500,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 11442534, guid: a65acf0cbf56b80419f74ebf0bc845f4, type: 3}
+      propertyPath: portName
+      value: COM3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2330,6 +2334,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 586b4e4e90102da41b669c5e08a99f3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inputDelta: 0.1
+  deadzone: 0.2
   rb: {fileID: 1316465352}
 --- !u!65 &1316465354
 BoxCollider:
