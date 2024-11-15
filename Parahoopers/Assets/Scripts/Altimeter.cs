@@ -14,16 +14,12 @@ public class Altimeter : MonoBehaviour
 
     private void Start()
     {
-        
+        slider.minValue = bottom.position.y;
+        slider.maxValue = top.position.y;
     }
 
     private void Update()
     {
-        float maxHeight = top.position.y;
-        float minHeight = bottom.position.y;
-
-        float difference = maxHeight - minHeight;
-
-        slider.value = Mathf.Clamp01((player.position.y - minHeight) / difference);
+        slider.value = player.position.y;
     }
 }
