@@ -58,8 +58,20 @@ public class PlayerController : MonoBehaviour
         //transform.Translate(Vector3.up * gravity * Time.deltaTime);
         rb.AddForce(Vector3.up * gravity * Time.deltaTime, ForceMode.Impulse);
 
+        if (Input.GetKey(KeyCode.A))
+        {
+            turningLeft = true;
+            processedInput = 1;
+        }
+        
+        if (Input.GetKey(KeyCode.D)) 
+        {
+            turningRight = true;
+            processedInput = -1;
+        }
+
         //Adds force to the 
-        if (Input.GetKey(KeyCode.A) || turningLeft)
+        if (turningLeft)
         {
             //rb.AddForce(-transform.right * force);
             transform.Rotate(Vector3.forward * torque * processedInput);
@@ -68,7 +80,7 @@ public class PlayerController : MonoBehaviour
         }
 
         //Adds force to the right
-        if (Input.GetKey(KeyCode.D) || turningRight)
+        if (turningRight)
         {
             //rb.AddForce(transform.right * force);
             transform.Rotate(Vector3.forward * torque * processedInput);
