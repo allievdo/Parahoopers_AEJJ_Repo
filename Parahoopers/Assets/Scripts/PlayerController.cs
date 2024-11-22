@@ -63,11 +63,22 @@ public class PlayerController : MonoBehaviour
             turningLeft = true;
             processedInput = 1;
         }
+        if (Input.GetKeyUp(KeyCode.A))
+        {
+            turningLeft = false;
+            processedInput = 0;
+        }
+        
         
         if (Input.GetKey(KeyCode.D)) 
         {
             turningRight = true;
             processedInput = -1;
+        }
+        if (Input.GetKeyUp(KeyCode.D))
+        {
+            turningRight = false;
+            processedInput = 0;
         }
 
         //Adds force to the 
