@@ -9,11 +9,15 @@ public class PlayerController : MonoBehaviour
     private int arduinoInput = -9999;
     private int lastInput = -9999;
     private float processedInput;
-    [SerializeField] private float inputDelta = 0.1f;
-    [SerializeField] private float deadzone = 0.2f;
+    private float deadzone = 10f;
+
+    public float startTime;
+    [SerializeField] private float timeTaken;
 
     private bool turningLeft = false; //Temporary for now
     private bool turningRight = false; //Temporary for now
+    public bool isPlaying = false;
+    public bool hasEnded = false;
 
     private float speed = 3.5f;
 
@@ -21,9 +25,16 @@ public class PlayerController : MonoBehaviour
     private float gravity = -0.25f;
 
     private float torque = 0.05f;
+    private float torqueOp = -0.05f;
     private float spinForce = 0.3f;
 
     public Rigidbody rb;
+
+    public HeatCool heatCool;
+
+    [SerializeField] private GameObject menu;
+    [SerializeField] private GameObject speedometer;
+    [SerializeField] private GameObject altitude;
 
     private void Start()
     {
@@ -49,67 +60,70 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        ProcessArduinoInput();
+        if (!isPlaying)
+            return;
 
-        //Always gives a constant forward speed
-        transform.Translate(Vector3.forward * speed * Time.deltaTime);
+        else
+        {
+            ProcessArduinoInput();
 
-        //Always applies a downward force (Represents gravity)
-        //transform.Translate(Vector3.up * gravity * Time.deltaTime);
-        rb.AddForce(Vector3.up * gravity * Time.deltaTime, ForceMode.Impulse);
+            isPlaying = true;
 
-        if (Input.GetKey(KeyCode.A))
-        {
-            turningLeft = true;
-            processedInput = 1;
-        }
-        if (Input.GetKeyUp(KeyCode.A))
-        {
-            turningLeft = false;
-            processedInput = 0;
-        }
-        
-        
-        if (Input.GetKey(KeyCode.D)) 
-        {
-            turningRight = true;
-            processedInput = -1;
-        }
-        if (Input.GetKeyUp(KeyCode.D))
-        {
-            turningRight = false;
-            processedInput = 0;
-        }
+            if (hasEnded == true)
+            {
+                End();
+                Debug.Log("Game has ended");
+            }
 
-        //Adds force to the 
-        if (turningLeft)
-        {
-            //rb.AddForce(-transform.right * force);
-            transform.Rotate(Vector3.forward * torque * processedInput);
-            transform.Rotate(Vector3.down * spinForce * processedInput);
-            //rb.AddTorque(transform.forward * torque);
-        }
+            //Always gives a constant forward speed
+            transform.Translate(Vector3.forward * speed * Time.deltaTime);
 
-        //Adds force to the right
-        if (turningRight)
-        {
-            //rb.AddForce(transform.right * force);
-            transform.Rotate(Vector3.forward * torque * processedInput);
-            transform.Rotate(Vector3.up * -spinForce * processedInput);
-            //rb.AddTorque(-transform.forward * torque);
-        }
+            //if (heatCool.heatPanel == true)
+            //{
+            //    Debug.Log("speed?");
+            //    transform.Translate(Vector3.forward * 3f * Time.deltaTime);
+            //    StartCoroutine(SpeedCooldown());
+            //}
 
-        //FOR TESTING
-        if (Input.GetKey(KeyCode.Space))
-        {
-            rb.AddForce(transform.up * force);
-            transform.Rotate(Vector3.right * torque * Time.deltaTime);
-        }
+            //Always applies a downward force (Represents gravity)
+            //transform.Translate(Vector3.up * gravity * Time.deltaTime);
+            rb.AddForce(Vector3.up * gravity * Time.deltaTime, ForceMode.Impulse);
 
-        if (Input.GetKey(KeyCode.S))
-        {
-            rb.AddForce(-transform.up * force);
-            transform.Rotate(Vector3.left * torque * Time.deltaTime);
+            //Adds force to the left
+
+
+            if (Input.GetKey(KeyCode.A) || turningLeft)
+            {
+                //rb.AddForce(-transform.right * force);
+                transform.Rotate(Vector3.forward * torque);
+                transform.Rotate(Vector3.down * spinForce);
+                //rb.AddTorque(transform.forward * torque);
+            }
+
+            if (turningRight) Debug.Log("turningRight");
+            if (turningLeft) Debug.Log("turningLeft");
+
+            //Adds force to the right
+            if (Input.GetKey(KeyCode.D) || turningRight)
+            {
+                //rb.AddForce(transform.right * force);
+                transform.Rotate(Vector3.forward * torqueOp);
+                transform.Rotate(Vector3.up * spinForce);
+                //rb.AddTorque(-transform.forward * torque);
+            }
+
+            //FOR TESTING
+            if (Input.GetKey(KeyCode.Space))
+            {
+                rb.AddForce(transform.up * force);
+                transform.Rotate(Vector3.right * torque * Time.deltaTime);
+            }
+
+            if (Input.GetKey(KeyCode.S))
+            {
+                rb.AddForce(-transform.up * force);
+                transform.Rotate(Vector3.left * torque * Time.deltaTime);
+            }
         }
     }
 
@@ -135,16 +149,16 @@ public class PlayerController : MonoBehaviour
 
             if (isRight)
             {
-                processedInput -= inputDelta; //10 needs to be changed to an adjustable variable
+                processedInput -= 10; //10 needs to be changed to an adjustable variable
             }
-            else if (isLeft)
+            else if (isRight)
             {
-                processedInput += inputDelta;// 10 here too
+                processedInput += 10;// 10 here too
             }
-            processedInput = Mathf.Clamp(processedInput, -1f, 1f);
+            if (processedInput > deadzone) turningRight = true;
+            else if (processedInput < -deadzone) turningLeft = true;
         }
-        if (processedInput > deadzone) turningRight = true;
-        else if (processedInput < -deadzone) turningLeft = true;
+
         // Set the last input equal to current input.
         lastInput = arduinoInput;
     }
@@ -153,5 +167,19 @@ public class PlayerController : MonoBehaviour
     private void SetArduinoValue(int value)
     {
         arduinoInput = value;
+    }
+
+    void End()
+    {
+        timeTaken = Time.time - startTime;
+        Debug.Log(timeTaken);
+        isPlaying = false;
+        Leaderboard.instance.SetLeaderboardEntry(-Mathf.RoundToInt(timeTaken * 1000.0f));
+    }
+
+    IEnumerator SpeedCooldown()
+    {
+        yield return new WaitForSeconds(0.8f);
+        transform.Translate(Vector3.forward * -3f * Time.deltaTime);
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CourseCheckpoints : MonoBehaviour
 {
@@ -14,6 +15,9 @@ public class CourseCheckpoints : MonoBehaviour
 
     private List<HoopScript> hoopCheckpointList;
     private int nextHoopCheckpointIndex;
+
+    public PlayerController playerController;
+
 
     private void Awake()
     {
@@ -50,6 +54,16 @@ public class CourseCheckpoints : MonoBehaviour
 
             HoopScript nextHoopSingle = hoopCheckpointList[nextHoopCheckpointIndex];
             nextHoopSingle.NextColor();
+
+            Debug.Log(nextHoopCheckpointIndex);
+
+            if (nextHoopCheckpointIndex >= hoopCheckpointList.Count - 1)
+            {
+                Time.timeScale = 0f;
+                Debug.Log("you win");
+                playerController.hasEnded = true;
+                SceneManager.LoadScene("Win");
+            }
         }
 
         else
