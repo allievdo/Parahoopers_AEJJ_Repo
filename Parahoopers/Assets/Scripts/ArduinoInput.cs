@@ -6,12 +6,19 @@ using UnityEngine.Events;
 
 public class ArduinoInput : MonoBehaviour
 {
+    public static ArduinoInput Instance;
     public static Action<int> InputRecieved;
     public static Action<bool> ConnectionEvent;
 
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        } 
+        else
+            Destroy(gameObject);
     }
 
     void OnMessageArrived(string msg)

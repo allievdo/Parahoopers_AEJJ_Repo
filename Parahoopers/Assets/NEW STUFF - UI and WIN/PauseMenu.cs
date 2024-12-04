@@ -12,7 +12,7 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private GameObject htpMenu;
     [SerializeField] private GameObject altitude;
-    [SerializeField] private GameObject speedometer;
+    //[SerializeField] private GameObject speedometer;
 
     private void Update()
     {
@@ -32,7 +32,7 @@ public class PauseMenu : MonoBehaviour
     public void Resume()
     {
         pauseMenu.SetActive(false);
-        speedometer.SetActive(true);
+        //speedometer.SetActive(true);
         altitude.SetActive(true);
         Time.timeScale = 1f;
         GameIsPaused = false;
@@ -42,7 +42,7 @@ public class PauseMenu : MonoBehaviour
     public void Pause()
     {
         pauseMenu.SetActive(true);
-        speedometer.SetActive(false);
+        //speedometer.SetActive(false);
         altitude.SetActive(false);
         Time.timeScale = 0f;
         GameIsPaused = true;
